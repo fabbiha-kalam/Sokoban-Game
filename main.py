@@ -81,10 +81,6 @@ class Vector2:
         return Vector2(self.x + other.x, self.y + other.y)
 
 
-def zip2(xs, ys):
-    return map(zip, xs, ys)
-
-
 class State:
     length: int
     width: int
@@ -143,9 +139,6 @@ class State:
         if tile == Tile.EMPTY:
             return background_tile.name()
         return tile.name()
-
-    def __str__(self) -> str:
-        return "\n".join(map(lambda row: "".join(map(lambda xs: State.print_tile(*xs), row)), zip2(self.tiles, self.background)))
 
 
 UP = Vector2(-1, 0)
