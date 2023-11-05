@@ -84,6 +84,7 @@ class Vector2:
 def zip2(xs, ys):
     return map(zip, xs, ys)
 
+
 class State:
     length: int
     width: int
@@ -121,7 +122,6 @@ class State:
         box_pos.set(self.tiles, Tile.EMPTY)
         target.set(self.tiles, Tile.BOX)
         return True
-
 
     def win(self) -> bool:
         for i in range(self.length):
@@ -224,8 +224,8 @@ def parse_level(level_str) -> Optional[State]:
     try:
         lines = level_str.splitlines()
         length, width = map(int, lines[0].split())
-        tiles = map(lambda ln: list(map(parse_tile, ln)),lines[1:length+1])
-        background_tiles = map(lambda ln: list(map(parse_background_tile, ln)),lines[length+1:(length*2)+1])
+        tiles = map(lambda ln: list(map(parse_tile, ln)), lines[1:length+1])
+        background_tiles = map(lambda ln: list(map(parse_background_tile, ln)), lines[length+1:(length*2)+1])
         return State(list(tiles), list(background_tiles))
     except Exception as e:
         print(e)
@@ -240,7 +240,7 @@ if __name__ == "__main__":
     # Load an initial state of a level
     try:
         with open(f"levels/{level_no}.txt") as f:
-             level_str = f.read()
+            level_str = f.read()
     except:
         print("The requested level doesn't exist!")
         print("Playing level 0 as default")
