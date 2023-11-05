@@ -1,9 +1,9 @@
 from typing import *
 from enum import Enum
-from collections import defaultdict
 from copy import deepcopy
 import sys
 import pygame
+
 
 class Tile(Enum):
     EMPTY = 0
@@ -24,6 +24,7 @@ class Tile(Enum):
             case _:
                 raise Exception("Invalid tile")
 
+
 def parse_tile(c):
     match c:
         case '.':
@@ -37,27 +38,30 @@ def parse_tile(c):
         case _:
             raise Exception("Invalid tile character: " + c)
 
+
 class BackgroundTile(Enum):
     EMPTY = 0
-    GOAL = 1
+    TARGET = 1
 
     def name(self):
         match self:
             case BackgroundTile.EMPTY:
                 return '.'
-            case BackgroundTile.GOAL:
+            case BackgroundTile.TARGET:
                 return 'o'
             case _:
                 raise Exception("Invalid background tile")
+
 
 def parse_background_tile(c):
     match c:
         case '.':
             return BackgroundTile.EMPTY
         case 'o':
-            return BackgroundTile.GOAL
+            return BackgroundTile.TARGET
         case _:
             raise Exception("Invalid background tile character: " + c)
+
 
 class Vector2:
     x: int
@@ -118,21 +122,11 @@ class State:
         target.set(self.tiles, Tile.BOX)
         return True
 
-    def state_is_valid(self) -> bool:
-        # check that there is one player, and that
-        # the number of boxes is equal to the number of goals
-        counts = defaultdict(lambda: 0)
-        for tile in self.tiles:
-            counts[tile] += 1
-        background_counts = defaultdict(lambda: 0)
-        for tile in self.background_tiles:
-            background_counts[tile] += 1
-        return counts[tile.PLAYER] == 1 and counts[tile.BOX] == background_counts[BackgroundTile.GOAL]
 
     def win(self) -> bool:
         for i in range(self.length):
             for j in range(self.width):
-                if self.tiles[i][j] == Tile.BOX and self.background[i][j] != BackgroundTile.GOAL:
+                if self.tiles[i][j] == Tile.BOX and self.background[i][j] != BackgroundTile.TARGET:
                     return False
         return True
 
@@ -161,6 +155,7 @@ RIGHT = Vector2(0, 1)
 
 CAN_MULTIPUSH = False
 
+
 class Game:
     state: List[State]
 
@@ -181,6 +176,7 @@ class Game:
             self.state.pop()
             return True
         return False
+
 
 class Renderer:
     cell_size: int = 80
@@ -208,12 +204,12 @@ class Renderer:
                 self.display.blit(Renderer.wallImg, (px, py))
             elif p.access(state.tiles) == Tile.EMPTY:
                 self.display.blit(Renderer.groundImg, (px, py))
-                if p.access(state.background) == BackgroundTile.GOAL:
+                if p.access(state.background) == BackgroundTile.TARGET:
                     self.display.blit(Renderer.targetImg, (px, py))
             elif p.access(state.tiles) == Tile.BOX:
                 if p.access(state.background) == BackgroundTile.EMPTY:
                     self.display.blit(Renderer.crateImg, (px, py))
-                if p.access(state.background) == BackgroundTile.GOAL:
+                if p.access(state.background) == BackgroundTile.TARGET:
                     self.display.blit(Renderer.solvedImg, (px, py))
             elif p.access(state.tiles) == Tile.PLAYER:
                 self.display.blit(Renderer.playerImg, (px, py))
@@ -222,6 +218,7 @@ class Renderer:
 
     def close(self):
         pygame.quit()
+
 
 def parse_level(level_str) -> Optional[State]:
     try:
@@ -233,6 +230,7 @@ def parse_level(level_str) -> Optional[State]:
     except Exception as e:
         print(e)
         return None
+
 
 if __name__ == "__main__":
     # Choose a level number from the command line
@@ -263,15 +261,15 @@ if __name__ == "__main__":
     while not game.state[-1].win():
         for event in pygame.event.get():
             if event.type == pygame.KEYUP:
-                if event.key == pygame.K_w:
+                if event.key == pygame.K_UP:
                     game.move(UP)
-                elif event.key == pygame.K_s:
+                elif event.key == pygame.K_DOWN:
                     game.move(DOWN)
-                elif event.key == pygame.K_a:
+                elif event.key == pygame.K_LEFT:
                     game.move(LEFT)
-                elif event.key == pygame.K_d:
+                elif event.key == pygame.K_RIGHT:
                     game.move(RIGHT)
-                elif event.key == pygame.K_z:
+                elif event.key == pygame.K_BACKSPACE:
                     game.undo()
 
                 renderer.update_state(game.state[-1])
