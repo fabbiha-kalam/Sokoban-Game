@@ -41,13 +41,13 @@ def parse_tile(c):
 
 class BackgroundTile(Enum):
     EMPTY = 0
-    TARGET = 1
+    GOAL = 1
 
     def name(self):
         match self:
             case BackgroundTile.EMPTY:
                 return '.'
-            case BackgroundTile.TARGET:
+            case BackgroundTile.GOAL:
                 return 'o'
             case _:
                 raise Exception("Invalid background tile")
@@ -58,7 +58,7 @@ def parse_background_tile(c):
         case '.':
             return BackgroundTile.EMPTY
         case 'o':
-            return BackgroundTile.TARGET
+            return BackgroundTile.GOAL
         case _:
             raise Exception("Invalid background tile character: " + c)
 
@@ -122,7 +122,7 @@ class State:
     def win(self) -> bool:
         for i in range(self.length):
             for j in range(self.width):
-                if self.tiles[i][j] == Tile.BOX and self.background[i][j] != BackgroundTile.TARGET:
+                if self.tiles[i][j] == Tile.BOX and self.background[i][j] != BackgroundTile.GOAL:
                     return False
         return True
 
@@ -197,12 +197,12 @@ class Renderer:
                 self.display.blit(Renderer.wallImg, (px, py))
             elif p.access(state.tiles) == Tile.EMPTY:
                 self.display.blit(Renderer.groundImg, (px, py))
-                if p.access(state.background) == BackgroundTile.TARGET:
+                if p.access(state.background) == BackgroundTile.GOAL:
                     self.display.blit(Renderer.targetImg, (px, py))
             elif p.access(state.tiles) == Tile.BOX:
                 if p.access(state.background) == BackgroundTile.EMPTY:
                     self.display.blit(Renderer.crateImg, (px, py))
-                if p.access(state.background) == BackgroundTile.TARGET:
+                if p.access(state.background) == BackgroundTile.GOAL:
                     self.display.blit(Renderer.solvedImg, (px, py))
             elif p.access(state.tiles) == Tile.PLAYER:
                 self.display.blit(Renderer.playerImg, (px, py))
